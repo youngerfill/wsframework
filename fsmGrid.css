@@ -1,0 +1,59 @@
+
+/***********************/
+/*   fsmGrid styles    */
+/***********************/
+
+.fsmGrid
+{
+    display: table;
+}
+
+
+.fsmGridRow
+{
+    display: table-row;
+}
+
+.fsmGridCell, .fsmGridRowHdr, .fsmGridColHdr
+{
+    border: 1px solid transparent;
+    display: table-cell;
+    padding: .5em;
+}
+
+.fsmGridRowHdr, .fsmGridColHdr
+{
+    font-weight: bold;
+}
+
+.fsmTransitionAllowed
+{
+    background-color: #AAFFAA;
+}
+
+.fsmGridCell:hover
+{
+    border: 1px dashed black;
+}
+
+.fsmGridHovered
+{
+    border: 1px dashed black;
+}
+
+.fsmGridHdrSelected, .fsmGridCellSelected
+{
+    border: 1px solid black;
+}
+
+.fsmGridHdrSelected
+{
+    background-color: #FFFFAA;
+}
+
+#fsmGridCodeBoxID
+{
+    width: 50em;
+    height: 80em;
+}
+

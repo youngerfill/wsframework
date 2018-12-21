@@ -1,0 +1,486 @@
+================================================================================
+
+    - create UI workflow after worksheet validation
+        v Add ability to move focus away from "Ready" button by pressing "up" arrow key
+		. Allow focused "Ready" button to have separate style.
+		v Focus 1st empty field after return to ws
+		v results buttons : redo / other
+        - clicking on question (but not in input box) should focus question & its input box
+        - Results dialog: auto-focus "redo test" button. After clicking on the latter button, 
+          auto-focus "start" button of Settings dialog.
+
+	- "add/sub" module
+
+	- enableWorksheet(false):
+		. currently: input field is disabled. Make it read-only and don't allow cursor to appear.
+
+    - var common:
+        . keep???
+
+    - create foreach function to loop over arrays and use it everywhere possible.
+
+    - create a 'tools.map()' function that iterates over an array and applies a function to every element
+        . if the array argument of 'map' is : tools.getAllElements(tools.elem("..."))
+            then 'map' wil operate over an entire element tree.
+
+    - Rename: tools.getAllElements --> tools.getAllChildren
+
+    - add module : subtraction / addition
+        . Move things like "focusQuestion()" to the module interface
+
+    - Add item to browser history on state change
+        . change URL on state change (URL parameters)
+
+    - Worksheet validation: strike-through wrong answers 
+      and put correct answer next to it in red
+
+    - multi-language functionality
+
+    - tools.js --> radi.js
+
+    - Use layout scheme of dendron theme
+
+	v Internationalisation:
+		v create concept prj to test translation
+		v implement in worsheetfw concept prj
+		v add a mode that outputs necessary code in case of absent translation
+            --> default behaviour. no mode.
+		
+    v in settings: "# questions" line of controls: disable initially, and enable when at least 1 table  chosen
+        . re-disable when all tables de-selected
+
+    v add enabling/disabling of element trees to app?/tools?
+		See: concepts/disable' for functions that can give text spans and text labels
+		a "disabled" look, by adding a 'disabled' class.
+		
+	v All tables checkbox: make it a button (to the right of checkboxes)
+
+    v disabling a dialog: element with class "control": disable it AND all children too.
+
+    v disabling an element: add a property with the previous value for re-enabling
+
+    v add module : tables
+
+    v close button : app.onCloseDialog("id...")
+        v next state determined based on arg
+
+    v app.enableDialog("id...")
+        so no longer module-specific
+
+    v validate ws
+
+    v spin off worksheet logic into its own module
+        v create mockup ws module with one input control in settings
+            and a fixed number of questions in worksheet dialog.
+
+    v enable dynamic loading/replacement of css files
+        v test with an a.css/b.css combo, an onload function and a timeout
+
+    v enable dynamic loading/replacement of js files
+        v move over fsmGrid code to separate file and load it
+            dynamically if needed
+        v add dedicated function for replacing ws module
+
+        x first make empty dialogs with:
+            - (rounded corners)
+            - close button where needed
+            - dimmed background where needed
+         --> no border-radius in IE8
+
+
+================================================================================
+
+Questions/Issues:
+  - How to:
+    . scroll page down from settings dialog to worksheet?
+    . dim entire page except for 1 (modal) dialog?
+    . draw rounded corners?
+    . draw circular 'close' button at the top right corner?
+    . custom-style controls (buttons, radiobuttons, checkboxes, input fields, ...)
+
+================================================================================
+
+Narrative
+---------
+
+Page loads:
+
+- Main menu --> choose the type of test
+
+Settings dialog
+    At the bottom: "Start" button (initially disabled)
+    At the upper right corner: 'x' to close the settings dialog (if the user clicks "yes" 
+    in the ensuing warning dialog) and return to the main menu.
+    When "Start" clicked, one of the following:
+
+    - An error box below Settings dialog, reporting that no worksheet could be created with 
+      the current settings. The user can keep working in the settings dialog, and then click "Start"
+      again. (This awkward non-modal error box should never appear, validation of the fields in Settings dialog
+      should enable the "Start" button only when ).
+
+    - A warning box below Settings dialog (reporting that a worksheet could be created, but not
+      all settings could be taken into account) and below it a worksheet. The settings dialog
+      is disabled: it is still shown, but no further input is possible.
+
+    - A worksheet. At the upper right corner a close button ('x') and at the bottom a "Ready"
+      button. Settings dialog: disabled.
+      The worksheet has a table-like layout, with every row representing an exercise. The exercises have
+      3 parts (columns), left to right: 
+
+          1. the question
+          2. an edit box to fill out the answer
+          3. some space to the right of the edit box to place a feedback icon.
+
+      The feedback possibilities are:
+
+          . "ok" (a green checkmark)
+          . "wrong" (a red cross)
+          . "empty field" (an exclamation mark in a triangle)
+
+       -> When 'x' is clicked, and the user clicks "yes" in the ensuing warning dialog, the worksheet
+          is closed and control returns to the settings dialog. 
+
+       -> When 'Ready' is clicked:
+
+            1. If not all fields are filled out, a warning dialog is shown below the worksheet and 
+                the user can choose between "Continue anyway" or "Return to worksheet". Meanwhile, 
+                in the feedback column, the empty fields are marked. If "Continue anyway" is 
+                clicked, jump to step 3.
+                
+            2. If "Return to worksheet" is clicked, the warning dialog disappears and control returns
+                to the worksheet. The "empty field" markers stay visible to guide the user in 
+                finishing the worksheet. Focus is set on the uppermost empty field.
+            
+            3. If all fields are filled out, or if the user clicked "Continue anyway", the content of 
+                the fields is validated, and an OK/X icon to the right of every field is displayed. 
+                Fields that are still empty at this stage get 'X'.
+                Below the worksheet a results dialog is shown with #good answers / total #answers.
+                A button "redo test" allows the user to perform another test, by returning to the settings
+				dialog.
+                A button "other test" brings the user back to the main menu.
+              
+
+
+================================================================================
+
+The buttons Settings->Start and Worksheet->Return should have an icon to the left resembling a 
+(stylized) worksheet (with a pencil).
+
+The buttons Worksheet->Ready and Worksheet->Continue should have a green checkmark to the left.
+
+================================================================================
+
+
+================================================================================
+
+States:
+-------
+
+MainMenu
+Settings
+SettingsClose
+SettingsError
+SettingsWarning
+Worksheet
+WorksheetClose
+WorksheetWarning
+Results
+
+
+================================================================================
+Settings    
+  Events:
+    - "Close" button clicked:
+      -> SettingsClose
+      
+    - Invalid settings after "Start" clicked:
+      -> SettingsError
+      
+    - Almost good settings after "Start" clicked:
+      -> SettingsWarning
+      
+    - Good settings after "Start" clicked:
+      -> Worksheet
+ 
+SettingsError
+ 
+  Events:
+    - Transition to this state finished:
+      -> Settings
+
+
+SettingsWarning
+
+  Events:
+    - Transition to this state finished:
+      -> Worksheet
+
+
+================================================================================
+
+FSM Transitions
+---------------
+
+
+Transition(start, MainMenu):
+  - Build menu
+
+
+Transition(SettingsClose, MainMenu):
+  - Remove "close settings" dialog
+  - un-dim page
+  - Remove Settings dialog
+  - Remove settings error dialog, if any
+  - Build menu
+
+    
+Transition(MainMenu,Settings):
+  - Remove menu
+  - Build settings dialog
+      
+      
+Transition(SettingsError, Settings):
+  - Do nothing
+
+
+Transition(SettingsClose, Settings):
+  - Remove "close settings" dialog
+  - un-dim page
+  - Enable controls
+
+
+Transition(WorksheetClose, Settings):
+    - Remove Worksheet
+    - Remove "close worksheet" dialog
+    - Un-dim page
+    - Enable controls
+
+
+Transition(Settings, SettingsClose):
+    - Disable controls
+    - Show "close settings" dialog
+    - Dim rest of page
+
+    
+Transition(Settings, SettingsWarning):
+    - Disable controls
+    - Remove settings error dialog, if any
+    - Show settings warning box
+
+
+Transition(Settings, Worksheet):
+    - Disable controls
+    - Remove settings error dialog, if any
+    - Build worksheet
+
+
+Transition(Settings, SettingsError):
+    - Show "Settings error" box below settings dialog
+
+
+Transition(WorksheetWarning, Worksheet):
+    - Remove worksheet warning dialog
+    - Enable controls of Worksheet
+    - Set focus on uppermost empty field
+
+
+Transition(WorksheetWarning, Results):
+    - Evaluate answers (and show feedback icons)
+    - Build results dialog
+
+Transition(WorksheetClose, Worksheet):
+    - Remove "close worksheet" dialog
+    - Un-dim page
+    - Enable controls of Worksheet
+
+
+Transition(Worksheet, WorksheetWarning):
+    - Disable controls of Worksheet
+    - Build worksheet warning dialog
+
+
+Transition(Worksheet, WorksheetClose):
+    - Disable controls of Worksheet
+    - Show "close worksheet" dialog
+    - Dim rest of page
+
+    
+Transition(Worksheet, Results):
+    - Disable controls of Worksheet
+    - Evaluate answers (and show feedback icons)
+    - Build results dialog
+    
+
+Transition(Results, Worksheet): 
+    - Remove results dialog
+    - Randomize parameters and re-initialize worksheet
+    - Enable controls of Worksheet
+
+    
+Transition(Results, Settings):
+    - Remove results dialog
+    - Remove worksheet
+    - Re-enable controls of Settings
+  
+
+================================================================================
+
+FSM, Enter/Leave version:
+-------------------------
+
+MainMenu
+
+  Enter(from start, SettingsClose):
+    - Build menu
+    
+  Leave:
+    - Remove menu
+    
+  Events:
+    - Item clicked:
+      -> Settings
+      
+      
+Settings
+
+  Enter(from MainMenu):
+    - Build settings dialog
+    
+  Enter(from SettingsError, SettingsClose):
+    - Do nothing
+    
+  Enter(from Worksheet, Results, SettingsClose):
+    - Enable controls
+    
+  Leave(to SettingsClose):
+    - Disable controls
+    
+  Leave(to SettingsWarning, Worksheet):
+    - Disable controls
+    - Remove settings error dialog, if any
+
+  Leave(to SettingsError):
+    - Do nothing
+    
+  Events:
+    - "Close" button clicked:
+      -> SettingsClose
+      
+    - Invalid settings after "Start" clicked:
+      -> SettingsError
+      
+    - Almost good settings after "Start" clicked:
+      -> SettingsWarning
+      
+    - Good settings after "Start" clicked:
+      -> Worksheet
+
+
+SettingsClose
+
+  Enter(from Settings):
+    - Show "close settings" dialog
+    - Dim rest of page
+    
+  Leave(to Settings):
+    - Remove "close settings" dialog
+    - un-dim page
+    
+  Leave(to MainMenu):
+    - Remove "close settings" dialog
+    - un-dim page
+    - Remove Settings dialog
+    - Remove settings error dialog, if any
+    
+  
+  Events:
+    - "yes" button clicked:
+      -> MainMenu
+      
+    - "no" button clicked:
+      -> Settings
+
+ 
+SettingsError
+ 
+  Enter(from Settings):
+    - Show "Settings error" box below settings dialog
+    
+  Leave(to Settings):
+    - Do nothing
+    
+  Events:
+    - Transition to this state finished:
+      -> Settings
+
+
+SettingsWarning
+
+  Enter(from Settings):
+    - Show settings warning box
+    
+  Leave(to Worksheet):
+    - Do nothing
+    
+  Events:
+    - Transition to this state finished:
+      -> Worksheet
+
+
+Worksheet
+
+  Enter(from Settings, SettingsWarning):
+    - Build worksheet
+    
+  Enter(from WorksheetWarning):
+    - Enable controls
+    - Set focus on uppermost empty field
+    
+  Enter(from WorksheetClose):
+    - Enable controls
+    
+  Leave(to WorksheetClose, WorksheetWarning):
+    - Disable controls
+    
+  Leave(to Results);
+    - Disable controls
+    
+
+WorksheetClose
+
+  Enter(from Worksheet):
+    - Show "close worksheet" dialog
+    - Dim rest of page
+    
+  Leave(to Worksheet):
+    - Remove "close worksheet" dialog
+    - Un-dim page
+    
+  Leave(to Settings):
+    - Remove Worksheet
+    - Remove "close worksheet" dialog
+    - Un-dim page
+    
+    
+WorksheetWarning
+
+  Enter(from Worksheet):
+    - Build worksheet warning dialog
+    
+  Leave(to Worksheet, Results):
+    - Remove worksheet warning dialog
+
+
+Results
+
+  Enter(from Worksheet, WorksheetWarning):
+    - Evaluate answers (and show feedback icons)
+    
+  Leave(to Worksheet):
+    - Remove results dialog
+    - Randomize parameters and re-initialize worksheet
+    
+  Leave(to Settings):
+    - Remove results dialog
+    - Remove worksheet
+  

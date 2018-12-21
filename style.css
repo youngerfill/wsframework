@@ -1,0 +1,168 @@
+
+#idMainMenu
+{
+    display: table;
+}
+
+.mainMenuItem
+{
+    display: table-row;
+}
+
+.mainMenuItem:hover
+{
+    background-color: blue;
+    color: white;
+}
+
+
+.mainMenuItem>a:hover
+{
+    color: white;
+}
+
+
+#idSettings
+{
+    border : solid 1px;
+}
+
+#idSettingsErrorBox
+{
+    background-color: red;
+    color: white;
+    border : solid 1px;
+}
+
+#idSettingsWarningBox
+{
+    background-color: yellow;
+    border : solid 1px;
+}
+
+#idWorksheet
+{
+    border: solid 1px;
+}
+
+#idWorksheetWarningBox
+{
+    border: solid 1px;
+}
+
+#idResults
+{
+    border: solid 1px;
+}
+
+.topLevelDiv
+{
+    margin: 1em;
+    padding: 1em;
+}
+
+.closeButton
+{
+    float: right;
+    display: inline-block;
+    padding: 2px 5px;
+    font-size:150%;
+    text-decoration: none;
+}
+
+.closeButtonEnabled
+{
+    text-decoration: none;
+}
+
+.closeButtonEnabled:hover
+{
+    font-weight: bold;
+/*    text-decoration: none;*/
+}
+
+.closeButtonDisabled
+{
+  color: #bbbbbb;
+}
+
+.worksheetTable
+{
+    display: table;
+    width: 100%;
+}
+
+.worksheetRow
+{
+    display: table-row;
+}
+
+.worksheetCell
+{
+    display: table-cell;
+    padding: 0.2em;
+
+    border-top: 3px solid transparent;
+    border-bottom: 3px solid transparent;
+}
+
+.worksheetLeftCell
+{
+    border-left: 3px solid transparent;
+}
+
+.worksheetRightCell
+{
+    border-right: 3px solid transparent;
+}
+
+.worksheetColIndex
+{
+    text-align: right;
+    color: #AAAAAA;
+}
+
+.worksheetColInput
+{
+//    width: 100%;
+}
+
+.worksheetInput
+{
+    border-style: solid;
+    border-width: 3px;
+    border-color: transparent;
+}
+
+.worksheetColQuestion
+{
+    text-align: right;
+}
+
+
+.worksheetReadyDiv
+{
+}
+
+.feedbackOK
+{
+  background-color: lightgreen;
+//  color: white;
+}
+
+.feedbackX
+{
+  background-color: red;
+  color: white;
+}
+
+.disabled
+{
+    color: #aaaaaa;
+}
+
+.buttonMargin
+{
+	margin-left: 1em;
+	margin-right: 1em;
+}
